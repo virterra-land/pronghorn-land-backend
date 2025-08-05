@@ -1,0 +1,16 @@
+version: "3.9"
+services:
+  db:
+    image: postgres:16-alpine
+    container_name: pronghorn-land-db
+    environment:
+      POSTGRES_USER: postgres
+      POSTGRES_PASSWORD: postgres
+      POSTGRES_DB: pronghorn_land
+    ports:
+      - "5433:5432"
+    volumes:
+      - pronghorn_land_db_data:/var/lib/postgresql/data
+
+volumes:
+  pronghorn_land_db_data:
