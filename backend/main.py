@@ -1,4 +1,5 @@
 from fastapi import FastAPI
+from fastapi.responses import JSONResponse
 import os
 from sqlalchemy import create_engine, text
 from dotenv import load_dotenv
@@ -17,6 +18,9 @@ def read_root():
 @app.get("/api/testimonials")
 def get_testimonials():
     with engine.connect() as conn:
-        result = conn.execute(text("SELECT * FROM testimonials"))
-        testimonials = [dict(row._mapping) for row in result]
+        result = conn.execute(text("SELECT reviewer_name, reviewer_text FROM testimonials"))
+        testimonials = [
+            {"author": row.reviewer_name, "content": row.reviewer_text}
+            for row in result
+        ]
         return testimonials
