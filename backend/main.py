@@ -18,9 +18,10 @@ def read_root():
 @app.get("/api/testimonials")
 def get_testimonials():
     with engine.connect() as conn:
-        result = conn.execute(text("SELECT reviewer_name, reviewer_text FROM testimonials"))
+        result = conn.execute(text("SELECT reviewer_name, review_text FROM testimonials"))
         testimonials = [
-            {"author": row.reviewer_name, "content": row.reviewer_text}
+            {"author": row.reviewer_name, "content": row.review_text}
             for row in result
         ]
         return testimonials
+
