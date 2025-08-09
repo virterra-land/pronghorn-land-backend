@@ -15,10 +15,27 @@ app = FastAPI()
 def read_root():
     return {'message': 'Hello from Pronghorn Land Backend'}
 
+# @app.get("/api/testimonials")
+# def get_testimonials():
+#     with engine.connect() as conn:
+#         result = conn.execute(text("SELECT reviewer_name, review_text, rating FROM testimonials"))
+#         testimonials = [
+#             {
+#                 "author": row.reviewer_name,
+#                 "content": row.review_text,
+#                 "rating": row.rating
+#             }
+#             for row in result
+#         ]
+#         return testimonials
+    
 @app.get("/api/testimonials")
 def get_testimonials():
     with engine.connect() as conn:
-        result = conn.execute(text("SELECT reviewer_name, review_text, rating FROM testimonials"))
+        result = conn.execute(
+            text("SELECT reviewer_name, review_text, rating FROM testimonials WHERE rating >= :min_rating"),
+            {"min_rating": 4}
+        )
         testimonials = [
             {
                 "author": row.reviewer_name,
@@ -28,4 +45,5 @@ def get_testimonials():
             for row in result
         ]
         return testimonials
+
 
