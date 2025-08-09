@@ -50,6 +50,7 @@ def ensure_schema():
         CREATE TABLE IF NOT EXISTS testimonials (
             id SERIAL PRIMARY KEY,
             reviewer_name TEXT NOT NULL,
+            avatar_url TEXT,
             rating INTEGER NOT NULL CHECK (rating BETWEEN 1 AND 5),
             review_text TEXT,
             review_date DATE,
@@ -57,11 +58,9 @@ def ensure_schema():
         );
     """)
     cur.execute("""
-        INSERT INTO testimonials (reviewer_name, avatar_url, rating, review_text, review_date, source)
-        VALUES (%s, %s, %s, %s, %s, %s)
-        ON CONFLICT DO NOTHING
-    """, (r["reviewer_name"], r["avatar_url"], r["rating"], r["review_text"], r["review_date"], r["source"]))
-
+        CREATE UNIQUE INDEX IF NOT EXISTS testimonials_unique_review_idx
+        ON testimonials (reviewer_name, review_date);
+    """)
     conn.commit()
     cur.close()
     conn.close()
@@ -77,13 +76,13 @@ def insert_reviews(reviews):
             ON CONFLICT DO NOTHING
         """, (
             r["reviewer_name"], 
-            r.get("avatar_url"),  # <-- Added this line
+            r.get("avatar_url"),
             r["rating"], 
             r["review_text"], 
             r["review_date"], 
             r["source"]
         ))
-        inserted += cur.rowcount  # 1 if inserted, 0 if skipped
+        inserted += cur.rowcount
     conn.commit()
     cur.close()
     conn.close()
